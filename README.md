@@ -1,77 +1,195 @@
-# Universal Biomedical Skills for LLMs
+# LLMs Universal Life Science & Clinical Skills
 
-A comprehensive, open-source collection of "Skills" (Prompts, Tools, and Agents) designed for Biomedical, Clinical, Genomics, and Life Science applications. This repository aims to provide standardized, model-agnostic building blocks for the next generation of AI in Healthcare.
+**The Open-Source Operating System for Biomedical AI Agents**
 
-## 📂 Repository Structure
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Status: Production](https://img.shields.io/badge/Status-Production-brightgreen.svg)]()
+[![Platform: Multi-LLM](https://img.shields.io/badge/Platform-Claude%20%7C%20ChatGPT%20%7C%20Gemini-purple.svg)]()
 
-- **Skills/**: The core library of capabilities.
-    - **Clinical/**: Skills for doctor-patient interactions, EHR summarization, and diagnostics support.
-        - `Clinical_Note_Summarization`: Turn unstructured notes into SOAP format.
-        - `Trial_Eligibility_Agent`: AI screener for matching patients to clinical trials.
-        - `Oncology`: (Planned) Precision oncology tools.
-    - **Genomics/**: Tools for analyzing DNA/RNA sequencing data.
-        - `Single_Cell_RNA_QC`: Automated Quality Control for scRNA-seq (scanpy/scverse).
-        - `CRISPR_Design_Agent`: Automated design of sgRNAs and off-target analysis.
-        - `Spatial_Transcriptomics`: (Planned) Agents for ST analysis.
-    - **Drug_Discovery/**: Cheminformatics and molecule analysis tools.
-        - `Chemical_Property_Lookup`: Calculate molecular properties using RDKit.
-        - `AgentD_Drug_Discovery`: AI-driven agent for literature mining and molecule generation.
-    - **Research_Tools/**: General academic research aids (Literature search, etc.).
-    - **MCP_Servers/**: (Planned) Model Context Protocol servers for biomedical data.
+---
 
-- **test_demonstration/**: Ready-to-run demos and test scripts.
-    - `qc_analysis.py`: Automated Single-Cell RNA-seq QC pipeline.
-    - `generate_dummy_data.py`: Create synthetic scRNA-seq datasets for testing.
-    - `run_test.sh`: One-click script to run the full QC demo.
+## Mission
 
-## 🆕 New Discoveries (Dec 2025)
+We build **production-ready, platform-agnostic biomedical AI skills** that empower researchers, clinicians, and developers to deploy advanced AI capabilities across any LLM interface. Whether you use **Claude**, **ChatGPT**, **Gemini**, or custom open-source models, our standardized skills deliver reproducible, validated results for real-world biomedical workflows.
 
-### Comprehensive Update (Dec 28, 2025)
-We have just released a massive update to our skills database! Check out **[COMPREHENSIVE_SKILLS_UPDATE_DEC_2025.md](COMPREHENSIVE_SKILLS_UPDATE_DEC_2025.md)** for an extensive report covering:
+## Why This Repository?
 
-- **45+ New Biomedical AI Agents**: Including Biomni, STAgent, BioMaster, and CellAgent.
-- **18 New Categories**: Ranging from Spatial Transcriptomics to Precision Oncology.
-- **MCP Servers**: Emerging standard for connecting AI agents to biomedical data (BioMCP).
-- **Clinical AI**: New tools for trial matching (TrialGPT) and radiology (RadGPT).
-- **Genomics**: Advanced variant interpretation (DYNA, AlphaMissense) and CRISPR design tools.
-- **Curated Resources**: 9 new "Awesome Lists" for tracking the exploding field of bio-AI.
+| Challenge | Our Solution |
+|-----------|--------------|
+| Biomedical AI tools are fragmented across platforms | **Universal Skill Definition Language (USDL)** compiles once, deploys everywhere |
+| Most AI prompts lack scientific validation | Every skill follows **peer-reviewed methodologies** with citations |
+| Integration is complex and time-consuming | **Drop-in Python modules** work with LangChain, AutoGen, Semantic Kernel |
+| Results are often non-reproducible | **Statistical rigor** (MAD-based filtering, validated thresholds) ensures consistency |
 
-### Earlier Discoveries
-See [NEW_SKILLS_DISCOVERY_DEC_2025.md](NEW_SKILLS_DISCOVERY_DEC_2025.md) for our initial December report on LLM agents and tools.
+---
 
-## 🚀 Getting Started
+## Skill Categories
 
-### Running the New Single-Cell QC Demo
-We've added a fully functional Single-Cell RNA-seq Quality Control demo.
+### Genomics & Bioinformatics
+
+| Skill | Description | Status |
+|-------|-------------|--------|
+| [Single-Cell RNA-seq QC](Skills/Genomics/Single_Cell_RNA_QC/) | Production-grade quality control with MAD-based outlier detection | Production |
+| [CRISPR Guide Design](Skills/Genomics/CRISPR_Design_Agent/) | Automated sgRNA design with off-target prediction | Production |
+| Variant Interpretation | Clinical significance assessment (ClinVar, ACMG) | Planned |
+| Spatial Transcriptomics | Tissue-aware spatial analysis | Planned |
+
+### Clinical AI
+
+| Skill | Description | Status |
+|-------|-------------|--------|
+| [Clinical Note Summarization](Skills/Clinical/Clinical_Note_Summarization/) | SOAP-format structuring from unstructured dictation | Production |
+| [Trial Eligibility Screening](Skills/Clinical/Trial_Eligibility_Agent/) | Automated patient-trial matching against I/E criteria | Production |
+| Diagnostic Decision Support | Differential diagnosis with evidence synthesis | Planned |
+| Medical Coding (ICD-10/SNOMED) | Automated code extraction from clinical text | Planned |
+
+### Drug Discovery & Cheminformatics
+
+| Skill | Description | Status |
+|-------|-------------|--------|
+| [AgentD Drug Discovery](Skills/Drug_Discovery/AgentD_Drug_Discovery/) | Literature mining, molecule generation, ADMET prediction | Production |
+| [Chemical Property Lookup](Skills/Drug_Discovery/Chemical_Property_Lookup/) | RDKit-powered molecular property calculation | Production |
+| Target Validation | Knowledge graph traversal for target identification | Planned |
+
+---
+
+## Quick Start
+
+### For Developers
+
+Integrate any skill into your LLM agent pipeline:
+
+```python
+# Example: Single-Cell QC in a LangChain agent
+from langchain.tools import tool
+import sys
+sys.path.append("Skills/Genomics/Single_Cell_RNA_QC")
+from qc_core import calculate_qc_metrics, filter_cells
+
+@tool
+def single_cell_qc(file_path: str, mad_threshold: float = 5.0) -> str:
+    """Performs automated quality control on scRNA-seq data using MAD-based filtering."""
+    import anndata as ad
+    adata = ad.read_h5ad(file_path)
+    calculate_qc_metrics(adata, inplace=True)
+    adata_filtered = filter_cells(adata, mad_threshold=mad_threshold)
+    output_path = file_path.replace(".h5ad", "_qc_filtered.h5ad")
+    adata_filtered.write(output_path)
+    return f"QC complete. Filtered {adata.n_obs - adata_filtered.n_obs} cells. Output: {output_path}"
+```
+
+### For Prompt Engineers
+
+Access validated prompts directly:
+
+```python
+# Load the Clinical Note Summarization prompt
+with open("Skills/Clinical/Clinical_Note_Summarization/prompt.md") as f:
+    system_prompt = f.read()
+
+# Use with any LLM API
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": clinical_note_text}
+    ]
+)
+```
+
+### For Researchers
+
+Run the demonstration pipeline:
 
 ```bash
 cd test_demonstration
-# Install requirements
 pip install -r requirements.txt
-# Run the demo (generates data and performs QC)
-./run_test.sh
+python qc_analysis.py ../sample_data/sample.h5ad --output-dir ./results
 ```
-Check the `qc_results` folder for generated plots and filtered datasets!
 
-### For Developers
-You can import the Python scripts in `Skills/` directly into your LangChain, Semantic Kernel, or AutoGen workflows.
+---
 
-### For Prompt Engineers
-Check the `prompt.md` files in the `Clinical` section for high-quality, tested medical prompts.
+## Platform Deployment
 
-## 🤝 Contributing
+Our **Universal Skill Definition Language (USDL)** enables single-source deployment:
 
-We welcome contributions! If you have a prompt or tool for:
-- Protein folding
-- Clinical trial matching
-- Medical coding (ICD-10)
-- CRISPR guide design
+| Platform | Output Format | Integration |
+|----------|---------------|-------------|
+| **Claude** | MCP Servers, SKILL.md files | Model Context Protocol |
+| **ChatGPT** | Custom GPT Actions, OpenAPI schemas | Assistants API, GPT Builder |
+| **Gemini** | Function Declarations | Vertex AI Extensions |
+| **Open Source** | Python modules | LangChain, AutoGen, CrewAI |
 
-Please submit a Pull Request.
+---
 
-## 📜 License
-[MIT License](LICENSE)
+## Recent Updates (December 2025)
 
-## 👤 Author
+### Comprehensive Expansion
+
+We cataloged **45+ biomedical AI agents** across **18 specialized categories**:
+
+- **High-Priority Additions**: Biomni (150 tools), STAgent (spatial transcriptomics), BioMaster (multi-omic pipelines), CellAgent (single-cell automation)
+- **New MCP Servers**: BioMCP for PubMed/PMC, ClinicalTrials.gov, genomic variant databases
+- **RAG Systems**: BiomedRAG, MEGA-RAG with 40%+ hallucination reduction
+
+See [COMPREHENSIVE_SKILLS_UPDATE_DEC_2025.md](COMPREHENSIVE_SKILLS_UPDATE_DEC_2025.md) for complete details.
+
+---
+
+## Repository Structure
+
+```
+.
+├── Skills/
+│   ├── Clinical/                    # Healthcare AI capabilities
+│   ├── Drug_Discovery/              # Cheminformatics & pharma
+│   └── Genomics/                    # Bioinformatics & sequencing
+├── test_demonstration/              # Validation suite with sample data
+├── presentation_materials/          # Documentation & tutorials
+├── COMPREHENSIVE_SKILLS_UPDATE_DEC_2025.md
+└── NEW_SKILLS_DISCOVERY_DEC_2025.md
+```
+
+---
+
+## Contributing
+
+We welcome contributions from domain experts. Priority areas:
+
+- **Protein Structure Prediction** (AlphaFold integration)
+- **Medical Imaging** (pathology, radiology)
+- **Pharmacovigilance** (adverse event detection)
+- **Clinical Coding** (ICD-10, SNOMED-CT automation)
+
+All contributions must include:
+1. Validation metrics on benchmark datasets
+2. Peer-reviewed methodology citations
+3. Example prompts and test cases
+
+---
+
+## Citation
+
+If you use these skills in your research, please cite:
+
+```bibtex
+@software{universal_biomedical_skills,
+  author = {Mia, MD Babu},
+  title = {LLMs Universal Life Science and Clinical Skills},
+  year = {2025},
+  url = {https://github.com/mdbabumiamssm/LLMs-Universal-Life-Science-and-Clinical-Skills-}
+}
+```
+
+---
+
+## Author & Maintainer
+
 **MD BABU MIA**
+*Artificial Intelligence Group*
+*Icahn School of Medicine at Mount Sinai*
 md.babu.mia@mssm.edu
+
+## License
+
+[MIT License](LICENSE) - Free for academic and commercial use.
