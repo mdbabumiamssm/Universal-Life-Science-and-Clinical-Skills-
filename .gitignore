@@ -1,0 +1,111 @@
+# =============================================================================
+# Universal Biomedical Skills - Git Ignore
+# =============================================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv/
+
+# Environment Variables
+.env
+.env.local
+*.env
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =============================================================================
+# Data Files (Large/Generated)
+# =============================================================================
+*.h5ad
+*.h5
+*.mtx
+*.mtx.gz
+*.tsv.gz
+*.csv.gz
+
+# Test Data Directories
+scRNAsedata/
+analyzed_data/
+qc_results/
+qc_results_demo/
+
+# =============================================================================
+# Archive (External References & Old Versions)
+# =============================================================================
+archive/
+
+# =============================================================================
+# Sensitive Files
+# =============================================================================
+token.txt
+*.token
+credentials.json
+secrets.yaml
+*.pem
+*.key
+
+# =============================================================================
+# Temporary Files
+# =============================================================================
+*.tmp
+*.temp
+*.log
+*.bak
+.~lock.*
+
+# =============================================================================
+# Build Outputs
+# =============================================================================
+platform/build/
+platform/output/
+platform/reports/
+
+# =============================================================================
+# Claude Code
+# =============================================================================
+.claude/
