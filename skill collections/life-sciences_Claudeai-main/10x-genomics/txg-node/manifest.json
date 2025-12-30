@@ -1,0 +1,62 @@
+{
+  "dxt_version": "0.1",
+  "name": "10x Genomics",
+  "display_name": "10x Genomics Cloud",
+  "version": "1.0.1",
+  "description": "Interact with 10x Genomics Cloud platform",
+  "long_description": "This extension enables Claude to interact with 10x Genomics Cloud platform, allowing users to launch, monitor, and manage single-cell analysis pipelines directly through conversation. Users can execute Cell Ranger analysis, upload data, track pipeline progress, retrieve results, and perform quality control checks.",
+  "author": {
+    "name": "10x Genomics",
+    "url": "https://www.10xgenomics.com/"
+  },
+  "homepage": "https://www.10xgenomics.com/",
+  "support": "https://www.10xgenomics.com/support",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "TXG_CLI_ACCESS_TOKEN": "${user_config.access_token}"
+      }
+    }
+  },
+  "user_config": {
+    "access_token": {
+      "type": "string",
+      "title": "Access Token",
+      "description": "Access Token for authentication (see https://cloud.10xgenomics.com/account/security)",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "keywords": [
+    "genomics",
+    "10x-genomics",
+    "single-cell",
+    "bioinformatics",
+    "cell-ranger",
+    "pipeline",
+    "cloud",
+    "rna-seq",
+    "chromium",
+    "atac-seq",
+    "scRNA-seq",
+    "analysis",
+    "biotechnology",
+    "sequencing",
+    "workflow",
+    "computational-biology"
+  ],
+  "license": "MIT",
+  "privacy_policies": ["https://www.10xgenomics.com/legal/privacy-policy"],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=16.0.0"
+    }
+  }
+}

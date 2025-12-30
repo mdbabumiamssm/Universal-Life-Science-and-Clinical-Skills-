@@ -1,0 +1,29 @@
+`txg` is the command-line interface to the 10x Genomics Cloud.
+
+# Linux/MacOS Installation
+
+`txg` is a single binary, so it doesn't need to be explicitly installed to use
+it.  You can run it from the current directory with `./txg`, or use an absolute
+path to run it from somewhere else with `/path/to/txg`, or add it to your `PATH`
+to use it from anywhere with `txg`.
+
+# Windows Installation
+
+`txg.exe` is a single binary, so it doesn't need to be explicitly installed to
+use it.  You can run it from the current directory with `txg.exe`, or use an
+absolute path to run it from somewhere else with `C:\path\to\txg.exe`.
+
+# Configuration
+
+Before using the CLI, you'll need to authenticate with `txg auth setup`.  See
+`txg help auth` for more information.
+
+# Usage
+
+Run `txg help` to see a list of available commands.  You can get more
+information about a particular command or subcommand with `txg help
+<command...>`, e.g. `txg help fastqs upload`.
+
+# License
+
+See the `LICENSE` file for terms of use.

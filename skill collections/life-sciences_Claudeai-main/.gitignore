@@ -1,0 +1,12 @@
+# Plugin cache directories
+.mcpb-cache/
+.claude/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
