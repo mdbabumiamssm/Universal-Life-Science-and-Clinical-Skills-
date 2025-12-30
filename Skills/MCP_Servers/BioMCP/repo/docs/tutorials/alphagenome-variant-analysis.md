@@ -1,19 +1,19 @@
-# Using Claude Code with BioMCP for AlphaGenome Variant Analysis
+# Using BioMCP for AlphaGenome Variant Analysis
 
-This tutorial demonstrates how to use Claude Code with BioMCP to analyze genetic variants using Google DeepMind's AlphaGenome. We'll explore both the MCP server integration and CLI approaches, showing how Claude Code can seamlessly work with both interfaces.
+This tutorial demonstrates how to use BioMCP to analyze genetic variants using Google DeepMind's AlphaGenome. We'll explore both the MCP server integration and CLI approaches.
 
 ## Prerequisites
 
-- **Claude Code**: Latest version with MCP support
+- **AI Assistant**: Any assistant with MCP support (e.g., Claude, Gemini, etc.)
 - **Python 3.11+**: Required for BioMCP and AlphaGenome
 - **uv**: Modern Python package manager ([installation guide](https://docs.astral.sh/uv/getting-started/installation/))
 - **AlphaGenome API Key**: Get free access at [Google DeepMind AlphaGenome](https://deepmind.google.com/science/alphagenome)
 
 ## Setup Overview
 
-BioMCP offers two interfaces that work perfectly with Claude Code:
+BioMCP offers two interfaces that work perfectly with AI assistants:
 
-1. **MCP Server**: Integrated directly into Claude Code for seamless workflows
+1. **MCP Server**: Integrated directly into your assistant for seamless workflows
 2. **CLI**: Command-line interface for direct terminal access
 
 Both produce identical results, giving you flexibility in how you work.
@@ -32,21 +32,14 @@ biomcp --version
 
 ### Step 2: Configure MCP Server
 
-Add BioMCP to your Claude Code MCP configuration:
+Add BioMCP to your MCP configuration:
 
 ```bash
 # Basic setup (requires ALPHAGENOME_API_KEY environment variable)
-claude mcp add biomcp -- uv run --with biomcp-python biomcp run
+mcp add biomcp -- uv run --with biomcp-python biomcp run
 
 # Or with API key in configuration
-claude mcp add biomcp -e ALPHAGENOME_API_KEY=your-api-key-here -- uv run --with biomcp-python biomcp run
-```
-
-Verify the setup:
-
-```bash
-claude mcp list
-claude mcp get biomcp
+mcp add biomcp -e ALPHAGENOME_API_KEY=your-api-key-here -- uv run --with biomcp-python biomcp run
 ```
 
 ### Step 3: Set Environment Variable
@@ -67,7 +60,7 @@ git clone https://github.com/google-deepmind/alphagenome.git
 cd alphagenome && uv pip install .
 ```
 
-## Part 2: Testing with Claude Code
+## Part 2: Testing with AI Assistant
 
 ### Example: DLG1 Exon Skipping Variant
 
@@ -76,7 +69,7 @@ Let's analyze the variant `chr3:197081044:TACTC>T` from the AlphaGenome paper, w
 #### Using MCP Server (Recommended)
 
 ```python
-# Claude Code automatically uses MCP when available
+# The assistant uses MCP to call the tool
 mcp__biomcp__alphagenome_predictor(
     chromosome="chr3",
     position=197081044,
@@ -135,11 +128,11 @@ uv run biomcp variant predict chr3 197081044 TACTC T
 - **Immediate Access**: No server setup required
 - **Debugging**: Direct command-line testing
 - **Scripting**: Easy integration into bash scripts
-- **Standalone Use**: Works without Claude Code
+- **Standalone Use**: Works without an assistant
 
-### Claude Code Perspective
+### Interface Comparison
 
-As Claude Code, both interfaces work equally well. The **MCP approach provides slight benefits**:
+Both interfaces work equally well. The **MCP approach provides slight benefits**:
 
 - Results persist across conversation turns
 - Built-in error handling and validation
@@ -242,7 +235,7 @@ The variant `chr3:197081044:TACTC>T` most strongly affects **MELTF** (+2.57 logâ
 
 ## Conclusion
 
-BioMCP's dual interface approach (MCP + CLI) provides robust variant analysis capabilities. Claude Code works seamlessly with both, offering flexibility for different workflows. The MCP integration provides slight advantages for interactive analysis, while the CLI excels for scripting and debugging.
+BioMCP's dual interface approach (MCP + CLI) provides robust variant analysis capabilities. AI assistants work seamlessly with both, offering flexibility for different workflows. The MCP integration provides slight advantages for interactive analysis, while the CLI excels for scripting and debugging.
 
 The combination of AlphaGenome's predictive power with BioMCP's comprehensive biomedical data access creates a powerful platform for genetic variant analysis and interpretation.
 
@@ -250,5 +243,5 @@ The combination of AlphaGenome's predictive power with BioMCP's comprehensive bi
 
 - [BioMCP Documentation](https://biomcp.org)
 - [AlphaGenome Paper](https://deepmind.google/science/alphagenome)
-- [Claude Code MCP Guide](https://docs.anthropic.com/claude/docs/model-context-protocol)
+- [Model Context Protocol Guide](https://modelcontextprotocol.io/)
 - [uv Documentation](https://docs.astral.sh/uv/)

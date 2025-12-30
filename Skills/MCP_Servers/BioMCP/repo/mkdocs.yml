@@ -30,7 +30,7 @@ nav:
           - Remote Connection: tutorials/remote-connection.md
           - BioThings Examples: tutorials/biothings-prompts.md
           - NCI Examples: tutorials/nci-prompts.md
-          - AlphaGenome Tutorial: tutorials/claude-code-biomcp-alphagenome.md
+          - AlphaGenome Tutorial: tutorials/alphagenome-variant-analysis.md
           - OpenFDA Examples: tutorials/openfda-prompts.md
       - Concepts:
           - Deep Researcher: concepts/02-the-deep-researcher-persona.md
