@@ -1,17 +1,24 @@
 # Precision Oncology Agent
 
-**Source:** [Nature Cancer 2025](https://www.nature.com/articles/s43018-025-00991-6)
-**Status:** Integrated Skill Reference
+**ID:** `biomedical.clinical.oncology.precision_agent`
+**Version:** 1.0.0
+**Status:** High Priority
+**Category:** Clinical / Oncology
+
+---
 
 ## Overview
-This agent represents a high-performance implementation of multimodal AI for precision oncology. It combines genomic data, pathology imaging, and clinical history to recommend personalized treatments.
 
-## Architecture
-- **Vision Module:** Analyzes H&E slides for tumor grade and immune infiltration.
-- **Genomic Module:** Interprets VCF files for actionable mutations (BRAF, KRAS, MSI status).
-- **Knowledge Module:** RAG system connected to OncoKB and NCCN guidelines.
-- **Decision Engine:** Synthesizes inputs to propose drug combinations.
+The **Precision Oncology Agent** leverages multimodal LLMs (like GPT-4V or fine-tuned LLaVA) to integrate genomic profiling (NGS), pathology images, and clinical history to recommend personalized cancer therapies.
+
+## Key Capabilities
+
+- **Variant Interpretation:** matches NGS mutations (e.g., *BRAF* V600E) to targeted therapies using OncoKB / CIViC.
+- **Trial Matching:** Screens patients against eligibility criteria for active oncology trials.
+- **Multimodal Synthesis:** Correlates histology patterns (e.g., tumor infiltrating lymphocytes) with genomic immune markers (TMB, MSI).
 
 ## Performance
-- Achieved **87.2% accuracy** in treatment recommendations compared to a tumor board (vs 30.3% for base GPT-4).
-- Demonstrates the necessity of *multimodal* context for clinical AI.
+- 87.2% decision-making accuracy in simulated tumor boards (Nature Cancer 2025).
+
+## References
+- *Autonomous Clinical AI Agent* (Nature Cancer, 2025)

@@ -1,47 +1,33 @@
-# BioMCP: Model Context Protocol for Biomedicine
+# BioMCP Server
 
-**Source:** [genomoncology/biomcp](https://github.com/genomoncology/biomcp)
-**Local Repository:** `./repo`
-**Status:** Integrated & Downloaded
+**ID:** `biomedical.mcp.biomcp`
+**Version:** 1.0.0
+**Status:** Production
+**Category:** Infrastructure / MCP
+
+---
 
 ## Overview
-BioMCP is an implementation of the **Model Context Protocol (MCP)** specifically for biomedical data. It allows any MCP-compliant AI client (like Claude Desktop, LobeChat, or Cursor) to natively "speak" to biomedical databases without custom glue code.
 
-## Connected Data Sources
-- **PubMed & PMC:** Literature search and retrieval.
-- **ClinicalTrials.gov:** Trial matching and protocol extraction.
-- **Genomic Databases:** Variant annotation (dbSNP, ClinVar).
-- **PubTator3:** Named entity recognition API.
+**BioMCP** is a dedicated Model Context Protocol (MCP) server for biomedical data. It exposes standard biomedical APIs (PubMed, ClinicalTrials.gov, PubChem) to any MCP-compliant LLM client (Claude Desktop, Cursor, etc.).
 
-## Quick Start
-1.  **Installation:**
-    ```bash
-    cd repo
-    # Using uv (recommended in repo)
-    uv sync
-    # Or standard pip
-    pip install .
-    ```
-2.  **Running the Server:**
-    You can run the MCP server directly or via Docker (see `repo/docker-compose.yml`).
-    ```bash
-    cd repo
-    make run
-    ```
-3.  **Client Configuration:**
-    Add the server to your MCP client config (e.g., Claude Desktop):
-    ```json
-    {
-      "mcpServers": {
-        "biomcp": {
-          "command": "python",
-          "args": ["-m", "biomcp.server"]
-        }
-      }
-    }
-    ```
+## Tools Provided
 
-## Benefits
-- **Standardization:** No need to write custom Python wrappers for every API.
-- **Interoperability:** Works with any LLM that supports MCP.
-- **Real-time:** Fetches the latest paper abstracts and trial statuses.
+1.  `search_pubmed(query, max_results)`
+2.  `get_drug_info(drug_name)` (via RxNorm/FDA)
+3.  `search_clinical_trials(condition, location)`
+4.  `get_gene_summary(gene_symbol)` (via NCBI Gene)
+
+## Usage
+
+Add to your `claude_desktop_config.json`:
+
+```json
+"biomcp": {
+  "command": "uvx",
+  "args": ["biomcp"]
+}
+```
+
+## References
+- [LobeHub BioMCP](https://lobehub.com/mcp/genomoncology-biomcp)
