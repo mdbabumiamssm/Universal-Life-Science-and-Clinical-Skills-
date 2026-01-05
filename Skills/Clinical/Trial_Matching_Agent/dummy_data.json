@@ -1,0 +1,34 @@
+[
+  {
+    "id": "NCT001",
+    "title": "Phase 3 Study of Pembrolizumab in NSCLC",
+    "conditions": ["Non-Small Cell Lung Cancer", "Lung Cancer", "NSCLC"],
+    "inclusion_criteria": "Age >= 18, Histologically confirmed NSCLC, PD-L1 positive",
+    "exclusion_criteria": "Autoimmune disease, recent chemotherapy",
+    "phase": "Phase 3"
+  },
+  {
+    "id": "NCT002",
+    "title": "Metformin for Type 2 Diabetes Management",
+    "conditions": ["Type 2 Diabetes", "Diabetes Mellitus"],
+    "inclusion_criteria": "Age 18-75, HbA1c > 7.0%, BMI > 25",
+    "exclusion_criteria": "Kidney disease, Liver disease",
+    "phase": "Phase 4"
+  },
+  {
+    "id": "NCT003",
+    "title": "Novel CAR-T Therapy for B-Cell Lymphoma",
+    "conditions": ["B-Cell Lymphoma", "Non-Hodgkin Lymphoma"],
+    "inclusion_criteria": "Relapsed or refractory disease, CD19 positive",
+    "exclusion_criteria": "Active infection, CNS involvement",
+    "phase": "Phase 1"
+  },
+  {
+    "id": "NCT004",
+    "title": "Aspirin for Heart Disease Prevention",
+    "conditions": ["Cardiovascular Disease", "Heart Disease"],
+    "inclusion_criteria": "Age > 50, History of hypertension",
+    "exclusion_criteria": "Bleeding disorders, Allergy to aspirin",
+    "phase": "Phase 2"
+  }
+]
