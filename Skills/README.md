@@ -23,6 +23,12 @@ This repository represents **Production-Grade Agentic Workflows** for biomedical
   - Human-in-the-loop checkpoints
   - Execution logging and monitoring
 
+- **Computer Science & Math Core** (Phase 2.5)
+  - **Plan-and-Solve Agent:** Advanced reasoning with planning/execution separation (`Agentic_AI/Agent_Architectures/Plan_and_Solve/`)
+  - **Knowledge Graphs:** Typed entities and pathway analysis for drug-gene interactions (`Computer_Science/Algorithms/Graph_Algorithms/`)
+  - **Advanced RAG:** HyDE and Contextual Reranking (`LLM_Research/RAG_Systems/`)
+  - **Bayesian Optimization:** Math engine for Self-Driving Labs (`Mathematics/Probability_Statistics/`)
+
 - **Production MedPrompt** (`Clinical/Clinical_Note_Summarization/medprompt_utils.py`)
   - Dynamic few-shot retrieval with semantic similarity
   - Chain-of-thought reasoning with 5-candidate ensemble
@@ -58,8 +64,23 @@ The "Brain" of the system - orchestration and reasoning.
 |--------|-------------|--------|
 | `Multi_Agent_Systems/` | Supervisor orchestrator, debate patterns | Production |
 | `Reasoning_Models/` | Tree-of-Thought, Chain-of-Verification | Production |
+| `Agent_Architectures/` | Plan-and-Solve, ReAct | Production |
 | `Memory_Systems/` | Vector store + episodic memory | Production |
-| `Agent_Architectures/` | ReAct agent implementation | Production |
+
+#### Computer Science (`Computer_Science/`)
+Fundamental algorithms powering the AI.
+
+| Module | Description |
+|--------|-------------|
+| `Graph_Algorithms/` | Knowledge Graphs, Pathfinding (BFS/DFS) |
+| `Distributed_Systems/` | Parallel execution patterns |
+
+#### Mathematics (`Mathematics/`)
+Mathematical engines for experimental design.
+
+| Module | Description |
+|--------|-------------|
+| `Probability_Statistics/` | Bayesian Optimization, Gaussian Processes |
 
 #### Foundation Models (`Foundation_Models/`)
 State-of-the-art biomedical foundation models.
@@ -123,6 +144,7 @@ Model Context Protocol integrations.
 | Tool | Description |
 |------|-------------|
 | `Biomni/` | 150+ biomedical tools, 59 database APIs |
+| `RAG_Systems/` | Advanced RAG (HyDE, Contextual Reranking) |
 
 ## Getting Started
 
@@ -157,6 +179,34 @@ result = orchestrator.run(
     task="Analyze aspirin and predict ADMET properties",
     context={"smiles": "CC(=O)OC1=CC=CC=C1C(=O)O"}
 )
+```
+
+### Quick Start: Complex Reasoning (Plan-and-Solve)
+```python
+from Agentic_AI.Agent_Architectures.Plan_and_Solve.planner import PlanAndSolveAgent, LLMAdapter
+
+agent = PlanAndSolveAgent(LLMAdapter())
+# Decomposes complex task into steps before execution
+result = agent.run("Design a new protocol for CRISPR off-target analysis")
+```
+
+### Quick Start: Biomedical Knowledge Graph
+```python
+from Computer_Science.Algorithms.Graph_Algorithms.knowledge_graph import KnowledgeGraph
+
+kg = KnowledgeGraph()
+kg.add_edge("DrugA", "GeneB", "inhibits")
+# Find pathway: DrugA -> GeneB
+path = kg.find_shortest_path("DrugA", "GeneB")
+```
+
+### Quick Start: Experimental Optimization (Bayesian)
+```python
+from Mathematics.Probability_Statistics.bayesian_optimization import BayesianOptimizer
+
+# Optimize experiment parameters (e.g., temperature, concentration)
+opt = BayesianOptimizer(bounds=[(0, 100), (0, 10)])
+next_experiment = opt.suggest_next_point()
 ```
 
 ### Quick Start: Clinical AI with Safety
