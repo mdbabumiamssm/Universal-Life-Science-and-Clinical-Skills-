@@ -1,169 +1,120 @@
-"""
-Bayesian Optimization for Experimental Design
-
-This module implements a simplified Bayesian Optimizer from scratch. 
-It is the mathematical engine behind "Self-Driving Labs".
-
-It uses:
-1. Surrogate Model: Gaussian Process (GP) to estimate the objective function.
-2. Acquisition Function: Expected Improvement (EI) to decide where to sample next.
-
-Usage:
-    optimizer = BayesianOptimizer(bounds=[(0, 10), (0, 10)])
-    next_point = optimizer.suggest_next_point()
-    # Run experiment at next_point -> result
-    optimizer.register(next_point, result)
-"""
-
-import math
-import random
+import numpy as np
 from typing import List, Tuple, Callable, Optional
+from dataclasses import dataclass
 
-class GaussianProcess:
-    """
-    A simplified Gaussian Process Regressor.
-    In production, use scikit-learn's GaussianProcessRegressor or GPy/BoTorch.
-    """
-    def __init__(self, length_scale: float = 1.0, noise: float = 1e-5):
-        self.length_scale = length_scale
-        self.noise = noise
-        self.X_train: List[List[float]] = []
-        self.y_train: List[float] = []
-
-    def fit(self, X: List[List[float]], y: List[float]):
-        """Store training data."""
-        self.X_train = X
-        self.y_train = y
-
-    def predict(self, X_test: List[List[float]]) -> Tuple[List[float], List[float]]:
-        """
-        Predict mean and std deviation for test points.
-        Uses a radial basis function (RBF) kernel logic.
-        """
-        means = []
-        stds = []
-        
-        # If no data, return prior (mean=0, high uncertainty)
-        if not self.X_train:
-            return [0.0] * len(X_test), [1.0] * len(X_test)
-
-        for x in X_test:
-            # Calculate weights (kernel similarities) based on distance to training points
-            # Simple RBF Kernel: k(x, x') = exp(-||x - x'||^2 / (2 * l^2))
-            weights = []
-            total_weight = 0.0
-            weighted_y = 0.0
-            
-            for i, x_train in enumerate(self.X_train):
-                dist_sq = sum((xi - xt) ** 2 for xi, xt in zip(x, x_train))
-                similarity = math.exp(-dist_sq / (2 * self.length_scale ** 2))
-                weights.append(similarity)
-                total_weight += similarity
-                weighted_y += similarity * self.y_train[i]
-            
-            # Prediction is weighted average of neighbors
-            # (Simplified; real GP does matrix inversion)
-            if total_weight > 1e-9:
-                pred_mean = weighted_y / total_weight
-                # Uncertainty drops as we get closer to known points
-                # Max uncertainty is 1.0, min is near 0
-                pred_std = 1.0 - (total_weight / (total_weight + 0.5)) 
-            else:
-                pred_mean = 0.0
-                pred_std = 1.0
-                
-            means.append(pred_mean)
-            stds.append(pred_std)
-            
-        return means, stds
+@dataclass
+class OptimizationResult:
+    best_params: np.ndarray
+    best_value: float
+    all_history: List[Tuple[np.ndarray, float]]
 
 class BayesianOptimizer:
-    def __init__(self, bounds: List[Tuple[float, float]]):
+    """
+    A lightweight implementation of Bayesian Optimization using Gaussian Processes (GP).
+    Crucial for 'Self-Driving Labs' to select the next experiment that maximizes information gain
+    (Upper Confidence Bound - UCB).
+    """
+    
+    def __init__(self, bounds: List[Tuple[float, float]], kappa: float = 2.5):
         """
-        bounds: List of (min, max) for each dimension.
+        :param bounds: List of (min, max) for each dimension.
+        :param kappa: Exploration-exploitation balance (higher = more exploration).
         """
-        self.bounds = bounds
-        self.model = GaussianProcess()
-        self.X_sample: List[List[float]] = []
-        self.y_sample: List[float] = []
-
-    def register(self, x: List[float], y: float):
-        """Record an observation (input x, output y)."""
-        self.X_sample.append(x)
-        self.y_sample.append(y)
-        self.model.fit(self.X_sample, self.y_sample)
-
-    def _expected_improvement(self, mean: float, std: float, y_max: float, xi: float = 0.01) -> float:
-        """
-        Calculate Expected Improvement (EI).
-        High EI means either high predicted mean (Exploitation) or high variance (Exploration).
-        """
-        if std == 0.0:
-            return 0.0
-            
-        z = (mean - y_max - xi) / std
-        # CDF and PDF approximation for standard normal
-        # Using simplified logic since we don't have scipy.stats.norm here
-        # This is a heuristic placeholder for: (mean - y_max - xi) * cdf(z) + std * pdf(z)
+        self.bounds = np.array(bounds)
+        self.dim = len(bounds)
+        self.kappa = kappa
+        self.X_sample: List[np.ndarray] = []
+        self.Y_sample: List[float] = []
         
-        return max(0, mean - y_max) + (std * 0.5) # Very simplified proxy
+        # Hyperparameters for the RBF Kernel
+        self.sigma_f = 1.0
+        self.length_scale = 1.0
+        self.noise = 1e-5
 
-    def suggest_next_point(self, num_candidates: int = 100) -> List[float]:
+    def _kernel(self, X1: np.ndarray, X2: np.ndarray) -> np.ndarray:
         """
-        Find the point that maximizes the Acquisition Function.
-        Uses random sampling (Monte Carlo) to optimize the acquisition function.
+        Radial Basis Function (RBF) / Squared Exponential Kernel.
+        Computes covariance between points.
         """
-        # If no data, pick random point
-        if not self.X_sample:
-            return [random.uniform(b[0], b[1]) for b in self.bounds]
+        sqdist = np.sum(X1**2, 1).reshape(-1, 1) + np.sum(X2**2, 1) - 2 * np.dot(X1, X2.T)
+        return self.sigma_f**2 * np.exp(-0.5 / self.length_scale**2 * sqdist)
 
-        y_max = max(self.y_sample)
+    def fit(self, X: List[np.ndarray], Y: List[float]):
+        """Update the internal Gaussian Process with new data."""
+        self.X_sample = np.array(X)
+        self.Y_sample = np.array(Y).reshape(-1, 1)
+
+    def predict(self, X: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Predicts mean and variance for a new set of points X using the GP.
+        """
+        if len(self.X_sample) == 0:
+            return np.zeros((len(X), 1)), np.ones((len(X), 1))
+
+        K = self._kernel(self.X_sample, self.X_sample) + self.noise * np.eye(len(self.X_sample))
+        K_s = self._kernel(self.X_sample, X)
+        K_ss = self._kernel(X, X) + 1e-8 * np.eye(len(X))
         
-        best_x = None
-        max_acq = -float("inf")
+        K_inv = np.linalg.inv(K)
         
-        # Generate candidate points
-        candidates = []
-        for _ in range(num_candidates):
-            cand = [random.uniform(b[0], b[1]) for b in self.bounds]
-            candidates.append(cand)
-            
-        # Predict surrogate
-        means, stds = self.model.predict(candidates)
+        # Mean prediction
+        mu = K_s.T.dot(K_inv).dot(self.Y_sample)
         
-        # Calculate acquisition scores
-        for i, (mean, std) in enumerate(zip(means, stds)):
-            acq = self._expected_improvement(mean, std, y_max)
-            if acq > max_acq:
-                max_acq = acq
-                best_x = candidates[i]
-                
-        return best_x if best_x else candidates[0]
+        # Variance prediction
+        cov = K_ss - K_s.T.dot(K_inv).dot(K_s)
+        return mu, np.diag(cov).reshape(-1, 1)
+
+    def acquisition_function(self, X: np.ndarray) -> np.ndarray:
+        """
+        Upper Confidence Bound (UCB).
+        Selects points with high mean (exploitation) or high variance (exploration).
+        """
+        mu, sigma = self.predict(X)
+        return mu + self.kappa * np.sqrt(sigma)
+
+    def propose_next_location(self, num_candidates: int = 100) -> np.ndarray:
+        """
+        Randomly samples the search space and returns the point with the highest Acquisition Score.
+        In production, use L-BFGS-B to maximize the acquisition function properly.
+        """
+        # Uniform random sampling within bounds
+        candidates = np.random.uniform(
+            self.bounds[:, 0], self.bounds[:, 1], size=(num_candidates, self.dim)
+        )
+        scores = self.acquisition_function(candidates)
+        best_idx = np.argmax(scores)
+        return candidates[best_idx]
 
 # --- Example Usage ---
-
 if __name__ == "__main__":
-    # Objective Function (Black Box): Maximize -(x-2)^2 + 10 (Peak at x=2, Value=10)
-    def objective_function(x):
-        return -(x[0] - 2.0)**2 + 10.0
+    # Define a "Black Box" function (e.g., experimental yield)
+    # Goal: Maximize this function
+    def synthetic_experiment(params):
+        # Simple 1D function: f(x) = -(x-2)^2 + 10. Max is at x=2, value=10.
+        x = params[0]
+        return -(x - 2.0)**2 + 10.0
+
+    # Initialize Optimizer for 1D space between [-5, 5]
+    opt = BayesianOptimizer(bounds=[(-5.0, 5.0)])
     
-    print("--- Bayesian Optimization of f(x) = -(x-2)^2 + 10 ---")
+    print("--- Starting Self-Driving Lab Simulation ---")
     
-    # 1D optimization, bound [0, 5]
-    optimizer = BayesianOptimizer(bounds=[(0.0, 5.0)])
+    # Initial random observations
+    X_init = [np.array([0.0]), np.array([4.0])]
+    Y_init = [synthetic_experiment(x) for x in X_init]
+    opt.fit(X_init, Y_init)
     
-    # Run 10 iterations
-    for i in range(10):
-        # 1. Ask optimizer for next point
-        next_point = optimizer.suggest_next_point()
+    # Run 5 optimization steps
+    for step in range(5):
+        next_param = opt.propose_next_location()
+        actual_value = synthetic_experiment(next_param)
         
-        # 2. Evaluate objective function (Experiment)
-        value = objective_function(next_point)
+        print(f"Step {step+1}: Suggested Param {next_param}, Result {actual_value:.4f}")
         
-        # 3. Tell optimizer the result
-        optimizer.register(next_point, value)
-        
-        print(f"Iter {i+1}: Sampled x={next_point[0]:.4f}, Result y={value:.4f}")
-        
-    best_idx = optimizer.y_sample.index(max(optimizer.y_sample))
-    print(f"\nBest Found: x={optimizer.X_sample[best_idx][0]:.4f}, y={optimizer.y_sample[best_idx]:.4f}")
+        # Add to known data
+        X_init.append(next_param)
+        Y_init.append(actual_value)
+        opt.fit(X_init, Y_init)
+
+    best_y = max(Y_init)
+    print(f"Optimization Complete. Best Value Found: {best_y:.4f}")
